@@ -1,0 +1,26 @@
+{
+	"name": "fetch2files",
+	"version": "1.0.0",
+	"description": "Fetch any present .url files.",
+	"main": "fetch2files.js",
+	"bin": {
+		"fetch2files": "./fetch2files.js"
+	},
+	"scripts": {
+		"fetch2files": "./fetch2files.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://archive.voodoowarez.com/fetch2files"
+	},
+	"keywords": ["fetch", "url"],
+	"author": "rektide de la faye",
+	"license": "X11",
+	"dependencies": {
+		"glob": "^7.1.1",
+		"mz": "^2.6.0",
+		"node-fetch": "^1.6.3",
+		"p-map": "^1.1.1"
+	}
+}
