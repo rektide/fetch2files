@@ -1,6 +1,6 @@
 {
 	"name": "fetch2files",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Fetch any present .url files.",
 	"main": "fetch2files.js",
 	"bin": {
@@ -14,13 +14,15 @@
 		"type": "git",
 		"url": "https://archive.voodoowarez.com/fetch2files"
 	},
-	"keywords": ["fetch", "url"],
+	"keywords": [
+		"fetch",
+		"url"
+	],
 	"author": "rektide de la faye",
 	"license": "X11",
 	"dependencies": {
-		"glob": "^7.1.1",
+		"main-routine-with-files": "^1.0.2",
 		"mz": "^2.6.0",
-		"node-fetch": "^1.6.3",
-		"p-map": "^1.1.1"
+		"node-fetch": "^1.6.3"
 	}
 }

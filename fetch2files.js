@@ -4,19 +4,9 @@
 var
   fs= require( "mz/fs"),
   fetch= require( "node-fetch"),
-  glob= require( "./glob"),
-  pmap= require( "p-map")
+  mrwf= require( "main-routine-with-files")
 
-async function resolveGlobs( globs){
-	if( !globs){
-		return
-	}
-	var files= await pmap( globs, g=> glob( g))
-	files= Array.prototype.concat.apply([], files)
-	return files
-}
-
-function checkFilenames( files){
+function fileCheck( files){
 	for( var i in files){
 		var file= files[ i]
 		if( file.indexOf( ".")== -1){
@@ -37,44 +27,39 @@ async function fetchUrl( input){
 }
 
 async function write( input){
-	var outFilename= input.filename.substring( 0, input.filename.lastIndexOf( "."))
+	var start= 0
+	if( !this|| !this.minimist|| !(this.minimist.fullpath|| this.minimist.p)){
+		start= input.filename.lastIndexOf( "/")+ 1
+	}
+	var outFilename= input.filename.substring( start, input.filename.lastIndexOf( "."))
 	return fs.writeFile( outFilename, input.buffer)
 }
 
-async function executeFile( filename){
+async function runFile( filename){
 	return readUrl( filename)
 		.then( module.exports.fetchUrl)
-		.then( module.exports.write)
+		.then( module.exports.write.bind( this))
 }
-
 
 async function main( opts){
-	opts= opts|| {}
-	opts.files= opts.files|| []
-	opts.globs= opts.globs!== undefined? opts.globs: process.argv.slice(2)
-	if( !opts.globs.length){
-		opts.globs= ["*url"]
-	}
-	if( opts.globs){
-		var globs= await module.exports.resolveGlobs( opts.globs)
-		if( globs){
-			opts.files= opts.files.concat( globs)
-		}
-	}
-	module.exports.checkFilenames( opts.files)
+	process.on("unhandledRejection", console.error)
 
-	opts.concurrency= opts.concurrency=== undefined? 5: opts.concurrency
-	return pmap( opts.files, module.exports.executeFile,{ concurrency: opts.concurrency})
+	opts= opts|| {}
+	opts.defaultGlob= opts.defaultGlob|| module.exports.defaultGlob
+	opts.fileCheck= opts.fileCheck|| module.exports.fileCheck
+	opts.runFile= opts.runFile|| module.exports.runFile.bind( opts)
+	return mrwf( opts)
 }
 
+
 module.exports= main
-module.exports.resolveGlobs= resolveGlobs
-module.exports.checkFilenames= checkFilenames
+module.exports.defaultGlob= "*url"
+module.exports.fileCheck= fileCheck
+module.exports.runFile= runFile
 module.exports.readUrl= readUrl
 module.exports.fetchUrl= fetchUrl
 module.exports.write= write
-module.exports.executeFile= executeFile
 
 if( require.main=== module){
-	main()
+	module.exports()
 }
